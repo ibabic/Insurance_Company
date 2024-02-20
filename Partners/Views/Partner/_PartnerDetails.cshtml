@@ -1,0 +1,163 @@
+﻿@using Partners.DataAccess.Models
+@model Partners.DataAccess.Models.PartnerModel
+@{
+    Layout = "~/Views/Shared/_LayoutSimple.cshtml";
+    ViewBag.Title = "PartnerDetails";
+}
+
+@{ Html.RenderPartial("_Notification"); }
+
+<div class="modal fade" id="partnerModal" tabindex="-1" role="dialog" aria-labelledby="partnerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="partnerModalLabel">Partner Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @Html.AntiForgeryToken()
+            <div class="modal-body">
+                <div class="mb-3">
+                    <div class="btn-group" role="group" aria-label="Edit or View">
+                        <button type="button" class="btn btn-secondary active" id="viewMode" style="background-color: #007bff; color: #fff;">
+                            View  <span class="bi bi-book"></span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="editMode" style="background-color: #6c757d; color: #fff;">
+                            Edit  <i class="bi bi-pencil"></i>
+                        </button>
+                    </div>
+                </div>
+                <form id="partnerForm" action="@Url.Action("UpdatePartner", "Partner")" method="post" data-ajax="true" data-ajax-method="Post" data-ajax-complete="afterSubmit">
+                    <input type="hidden" id="partnerId" name="Id" value="@Model.Id">
+                    <div class="row mb-3" id="fullNameRow">
+                        <div class="col">
+                            <label for="fullNameInput" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fullNameInput" value="@Model.FirstName @Model.LastName" disabled>
+                        </div>
+                    </div>
+                    <div class="row mb-3" id="firstNameRow" style="display: none;">
+                        <div class="col">
+                            @Html.LabelFor(m => m.FirstName, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", disabled = "disabled" })
+                            @Html.ValidationMessageFor(m => m.FirstName, null, new { @class = "text-danger" })
+                        </div>
+                        <div class="col">
+                            @Html.LabelFor(m => m.LastName, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", disabled = "disabled" })
+                            @Html.ValidationMessageFor(m => m.LastName, null, new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="addressInput" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="addressInput" name="Address" value="@Model.Address" disabled>
+                        </div>
+                        <div class="col">
+                            @Html.LabelFor(m => m.PartnerNumber, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.PartnerNumber, new { @class = "form-control", disabled = "disabled" })
+                            @Html.ValidationMessageFor(m => m.PartnerNumber, null, new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="croatianPINInput" class="form-label">Croatian PIN</label>
+                            <input type="text" class="form-control" id="croatianPINInput" name="CroatianPIN" value="@Model.CroatianPIN" disabled>
+                        </div>
+                        <div class="col">
+                            <label for="partnerTypeInput" class="form-label">Partner Type</label>
+                            <select class="form-control" id="partnerTypeIdInput" name="PartnerTypeId" disabled>
+                                <option value=@PartnerType.Personal @(Model.PartnerTypeId == PartnerType.Personal ? "selected" : "")>Personal</option>
+                                <option value=@PartnerType.Legal @(Model.PartnerTypeId == PartnerType.Legal ? "selected" : "")>Legal</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="createdAtInput" class="form-label">Created At</label>
+                            <input type="text" class="form-control" id="createdAtInput" name="CreatedAtUtc" value="@Model.CreatedAtUtc" disabled>
+                        </div>
+                        <div class="col">
+                            @Html.LabelFor(m => m.CreateByUser, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.CreateByUser, new { @class = "form-control", disabled = "disabled" })
+                            @Html.ValidationMessageFor(m => m.CreateByUser, null, new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="genderInput" class="form-label">Gender</label>
+                            <select class="form-control" id="genderInput" name="Gender" disabled>
+                                <option value="M" @(Model.Gender == 'M' ? "selected" : "")>Male</option>
+                                <option value="F" @(Model.Gender == 'F' ? "selected" : "")>Female</option>
+                                <option value="N" @(Model.Gender == 'N' ? "selected" : "")>Not Specified</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            @Html.LabelFor(m => m.ExternalCode, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.ExternalCode, new { @class = "form-control", disabled = "disabled" })
+                            @Html.ValidationMessageFor(m => m.ExternalCode, null, new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="form-check-label mb-2" for="isForeignInput">Is Foreign</label>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="isForeignInput" name="IsForeign" @(Model.IsForeign ? "checked" : "") disabled style="transform: scale(1.6); margin-left: 5px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="bi bi-x-lg"></i></button>
+                        <button type="submit" class="btn btn-primary" id="saveChanges">Save Changes <i class="bi bi-floppy"></i></button>
+                        <button type="submit" class="btn btn-danger" id="deletePartner">Delete Partner <i class="bi bi-trash"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @Html.AntiForgeryToken()
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#viewMode').click(function () {
+            $('#editMode').removeClass('active active-mode').css('background-color', '#6c757d');
+            $(this).addClass('active active-mode').css('background-color', '#007bff');
+            $('#fullNameRow').show();
+            $('#firstNameRow').hide();
+            $('#partnerForm input, #partnerForm select, #isForeignInput').prop('disabled', true);
+            $('#saveChanges').prop('disabled', true);
+            $('#deletePartner').prop('disabled', true);
+        });
+
+        $('#editMode').click(function () {
+            $('#viewMode').removeClass('active active-mode').css('background-color', '#6c757d');
+            $(this).addClass('active active-mode').css('background-color', '#007bff');
+            $('#fullNameRow').hide();
+            $('#firstNameRow').show();
+            $('#partnerForm input, #partnerForm select, #isForeignInput').not('#createdAtInput').prop('disabled', false);
+            $('#saveChanges').prop('disabled', false);
+            $('#deletePartner').prop('disabled', false);
+        });
+
+    $('#deletePartner').click(function () {
+    // Send the AJAX request to delete the partner
+    $.post('@Url.Action("Delete", "Partner", new { id = Model.Id })', function (result) {
+        // This code will be executed after the AJAX request is successful
+        $('#partnerModal').modal('hide'); // Hide the modal
+    }).done(function() {
+        // This code will be executed after the AJAX request is successful and the modal is hidden
+        window.location.reload(); // Reload the page
+    });
+});
+
+    if ($('#viewMode').hasClass('active')) {
+        $('#partnerForm input, #partnerForm select').prop('disabled', true);
+        $('#saveChanges').prop('disabled', true);
+        $('#deletePartner').prop('disabled', true);
+    }
+});
+</script>

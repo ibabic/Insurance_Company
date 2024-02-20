@@ -1,0 +1,64 @@
+﻿@using Partners.DataAccess.Models;
+@model IOrderedEnumerable<PartnerModel>
+
+@{
+    ViewBag.Title = "Partner List";
+}
+
+@{ Html.RenderPartial("_Notification"); }
+
+<h1>Partner List</h1>
+<div class="row mb-3">
+    <div class="col-md-12">
+        <a href="@Url.Action("Create", "Partner")" class="btn btn-primary">Add Partner  <i class="bi bi-person-plus"></i></a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Partner Number</th>
+                <th>Croatian PIN</th>
+                <th>Partner Type</th>
+                <th>Created At</th>
+                <th>Is Foreign</th>
+                <th>Gender</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var partner in Model)
+            {
+                <tr data-partner-id="@partner.Id">
+                    <td>@(partner.FirstName + " " + partner.LastName)</td>
+                    <td>@partner.PartnerNumber</td>
+                    <td>@partner.CroatianPIN</td>
+                    <td>@partner.PartnerTypeId</td>
+                    <td>@partner.CreatedAtUtc</td>
+                    <td>@(partner.IsForeign ? "Yes" : "No")</td>
+                    <td>@partner.Gender</td>
+                    <td>
+                        @Html.ActionLink("Create Policy", "CreatePolicy", "Policy", new { partnerId = partner.Id }, new { @class = "btn btn-primary create-policy" })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="partnerDetailsContainer"></div>
+
+<script>
+    $(document).ready(function() {
+        $('table').on('click', 'tr', function() {
+            var partnerId = $(this).data('partner-id');
+
+            $.get('@Url.Action("GetPartnerDetails", "Partner")', { id: partnerId }, function(data) {
+                $('#partnerDetailsContainer').html(data);
+                $('#partnerModal').modal('show');
+            });
+        });
+    });
+</script>

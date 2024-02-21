@@ -30,12 +30,12 @@ namespace Partners.DataAccess.Data
             return results.FirstOrDefault();
         }
 
-        public async Task<PolicyModel> GetByPartnerId(int id)
+        public async Task<IEnumerable<PolicyModel>> GetByPartnerId(int id)
         {
             var results = await _context.LoadData<PolicyModel, dynamic>(StoredProcedures.Policy_GetByPartnerId,
                 new { partnerId = id });
 
-            return results.FirstOrDefault();
+            return results;
         }
 
         public async Task Insert(PolicySaveDto policy)

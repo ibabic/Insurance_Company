@@ -9,7 +9,7 @@ namespace Partners.DataAccess.Data
     {
         Task SoftDelete(int id);
         Task<PolicyModel> Get(int id);
-        Task<PolicyModel> GetByPartnerId(int id);
+        Task<IEnumerable<PolicyModel>> GetByPartnerId(int id);
         Task<IEnumerable<PolicyModel>> GetAll();
         Task Insert(PolicySaveDto partner);
         Task Update(PolicyUpdateDto partner);

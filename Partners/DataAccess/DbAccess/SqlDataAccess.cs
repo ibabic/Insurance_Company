@@ -65,7 +65,7 @@ namespace Partners.DataAccess.DbAccess
 
                     Log.Information("Saving data to database: {StoredProcedure}", storedProcedure);
 
-                      connection.Execute(storedProcedure, parameters,
+                       connection.Execute(storedProcedure, parameters,
                         commandType: CommandType.StoredProcedure);
                 }
             }
@@ -74,7 +74,7 @@ namespace Partners.DataAccess.DbAccess
                 Log.Error(ex, "Error executing stored procedure: {StoredProcedure}", storedProcedure);
                 if (ex.Number == 2627 || ex.Number == 2601)
                 {
-                    throw new UniqueKeyViolationException("The data you are trying to save is a unique key that already exists", ex);
+                    throw new UniqueKeyViolationException("The External Code you entered already exists in the system. Please choose a different External Code", ex);
                 }
                 else
                 {

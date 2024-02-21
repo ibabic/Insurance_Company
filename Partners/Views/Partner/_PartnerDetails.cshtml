@@ -28,7 +28,7 @@
                         </button>
                     </div>
                 </div>
-                <form id="partnerForm" action="@Url.Action("UpdatePartner", "Partner")" method="post" data-ajax="true" data-ajax-method="Post" data-ajax-complete="afterSubmit">
+                <form id="partnerForm" action="@Url.Action("Edit", "Partner")" method="post" data-ajax="true" data-ajax-method="Post" data-ajax-complete="afterSubmit">
                     <input type="hidden" id="partnerId" name="Id" value="@Model.Id">
                     <div class="row mb-3" id="fullNameRow">
                         <div class="col">
@@ -104,7 +104,7 @@
                             <div class="form-group">
                                 <label class="form-check-label mb-2" for="isForeignInput">Is Foreign</label>
                                 <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="isForeignInput" name="IsForeign" @(Model.IsForeign ? "checked" : "") disabled style="transform: scale(1.6); margin-left: 5px;">
+                                    <input type="checkbox" class="form-check-input" id="isForeignInput" name="IsForeign" @(Model.IsForeign ? "checked" : "") value="true" @(Model.IsForeign ? "checked='checked'" : "") disabled style="transform: scale(1.6); margin-left: 5px;">
                                 </div>
                             </div>
                         </div>
@@ -112,12 +112,13 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close <i class="bi bi-x-lg"></i></button>
                         <button type="submit" class="btn btn-primary" id="saveChanges">Save Changes <i class="bi bi-floppy"></i></button>
-                        <button type="submit" class="btn btn-danger" id="deletePartner">Delete Partner <i class="bi bi-trash"></i></button>
+                        <button type="button" class="btn btn-danger" id="deletePartner">Delete Partner <i class="bi bi-trash"></i></button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+    @Html.Partial("_DeleteConfirmationModal")
     @Html.AntiForgeryToken()
 </div>
 
@@ -143,16 +144,17 @@
             $('#deletePartner').prop('disabled', false);
         });
 
-    $('#deletePartner').click(function () {
-    // Send the AJAX request to delete the partner
-    $.post('@Url.Action("Delete", "Partner", new { id = Model.Id })', function (result) {
-        // This code will be executed after the AJAX request is successful
-        $('#partnerModal').modal('hide'); // Hide the modal
-    }).done(function() {
-        // This code will be executed after the AJAX request is successful and the modal is hidden
-        window.location.reload(); // Reload the page
-    });
-});
+       $('#deletePartner').click(function () {
+        $('#deleteConfirmationModal').modal('show');
+        });
+
+        $('#confirmDeleteBtn').click(function () {
+            $('#deleteConfirmationModal').modal('hide');
+            $.post('@Url.Action("Delete", "Partner", new { id = Model.Id })')
+                .done(function () {
+                    window.location.reload();
+                });
+        });
 
     if ($('#viewMode').hasClass('active')) {
         $('#partnerForm input, #partnerForm select').prop('disabled', true);

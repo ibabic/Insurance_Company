@@ -38,3 +38,7 @@ table tbody tr:hover {
 .input-validation-error {
     border-color: red 
 }
+
+.green-text {
+    color: green;
+}

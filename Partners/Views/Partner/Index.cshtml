@@ -1,5 +1,4 @@
-﻿@using Partners.DataAccess.Models;
-@model IOrderedEnumerable<PartnerModel>
+﻿@model Partners.ViewModel.PartnerViewModel
 
 @{
     ViewBag.Title = "Partner List";
@@ -25,14 +24,15 @@
                 <th>Created At</th>
                 <th>Is Foreign</th>
                 <th>Gender</th>
-                <th>Action</th>
+                <th>Create Policy</th>
+                <th>View Policies</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var partner in Model)
+            @foreach (var partner in Model.partners)
             {
-                <tr data-partner-id="@partner.Id">
-                    <td>@(partner.FirstName + " " + partner.LastName)</td>
+                <tr data-partner-id="@partner.Id" style="@(Model.postCreated && partner == Model.partners.FirstOrDefault() ? "background-color: #d1ffd1; font-weight: bold;" : "")">
+                    <td>@(partner.NumberOfPolicies > 5 || partner.PoliciesTotalAmount > 5000 ? "*" + partner.FirstName + " " + partner.LastName : partner.FirstName + " " + partner.LastName)</td>
                     <td>@partner.PartnerNumber</td>
                     <td>@partner.CroatianPIN</td>
                     <td>@partner.PartnerTypeId</td>
@@ -40,7 +40,14 @@
                     <td>@(partner.IsForeign ? "Yes" : "No")</td>
                     <td>@partner.Gender</td>
                     <td>
-                        @Html.ActionLink("Create Policy", "CreatePolicy", "Policy", new { partnerId = partner.Id }, new { @class = "btn btn-primary create-policy" })
+                        <button type="button" class="btn btn-primary create-policy" data-partner-id="@partner.Id">
+                            Create Policy <i class="bi bi-folder-plus"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-info view-policy" data-partner-id="@partner.Id">
+                            View Policies <i class="bi bi-binoculars"></i>
+                        </button>
                     </td>
                 </tr>
             }
@@ -49,15 +56,41 @@
 </div>
 
 <div id="partnerDetailsContainer"></div>
+<div id="viewPoliciesContainer"></div>
+<div id="createPolicyContainer"></div>
 
 <script>
     $(document).ready(function() {
-        $('table').on('click', 'tr', function() {
+        $('table').on('click', 'tr', function () {
+            if ($(event.target).is('button')) {
+                return;
+            }
+            if ($(event.target).closest('button').length) {
+                return;
+            }
             var partnerId = $(this).data('partner-id');
 
             $.get('@Url.Action("GetPartnerDetails", "Partner")', { id: partnerId }, function(data) {
                 $('#partnerDetailsContainer').html(data);
                 $('#partnerModal').modal('show');
+            });
+        });
+
+        $('.view-policy').click(function () {
+            var partnerId = $(this).closest('tr').data('partner-id');
+            var url = '@Url.Action("ShowPolicies", "Policy")' + '?Id=' + partnerId;
+            $.get(url, function (data) {
+                $('#viewPoliciesContainer').html(data);
+                $('#viewPoliciesModal').modal('show');
+            });
+        });
+
+        $('.create-policy').click(function () {
+            var partnerId = $(this).closest('tr').data('partner-id');
+            var url = '@Url.Action("Create", "Policy")' + '?Id=' + partnerId;
+            $.get(url, function (data) {
+                $('#createPolicyContainer').html(data);
+                $('#createPolicyModal').modal('show');
             });
         });
     });

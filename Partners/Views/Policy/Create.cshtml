@@ -1,0 +1,70 @@
+﻿@model Partners.DataAccess.Models.DTOs.PolicySaveDto
+
+@{
+    ViewBag.Title = "Create Policy";
+    Layout = "~/Views/Shared/_LayoutSimple.cshtml";
+}
+
+<div class="modal fade" id="createPolicyModal" tabindex="-1" role="dialog" aria-labelledby="createPolicyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createPolicyModalLabel">Create Policy</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Policy Number</th>
+                                        <th>Policy Amount</th>
+                                        <th style="display: none;">Actions</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            @Html.EditorFor(model => model.PolicyNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.PolicyNumber, "", new { @class = "text-danger" })
+                                        </td>
+                                        <td>
+                                            @Html.EditorFor(model => model.PolicyAmount, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.PolicyAmount, "", new { @class = "text-danger" })
+                                        </td>
+                                        <td>
+                                            @Html.HiddenFor(model => model.PartnerId)
+                                            @Html.ValidationMessageFor(model => model.PartnerId, "", new { @class = "text-danger" })
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer d-flex justify-content-center">
+                    <div>
+                        <button type="submit" class="btn btn-primary">
+                            Create <i class="bi bi-cart-plus"></i>
+                        </button>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            Close <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

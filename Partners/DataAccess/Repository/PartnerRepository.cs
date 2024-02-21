@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Partners.DataAccess.Models.DTOs;
-using System.EnterpriseServices;
-using Serilog;
 
 namespace Partners.DataAccess.Data
 {
@@ -46,15 +44,41 @@ namespace Partners.DataAccess.Data
             await _context.SaveData(StoredProcedures.Partner_SoftDelete, new { Id = id });
         }
 
-        public IEnumerable<PartnerModel> TransactionInsertOneAndGetAll(PartnerSaveDto partner)
+        public IEnumerable<PartnerLoadDto> GetPartnersWithPolicies()
         {
             try
             {
                 _context.StartTransaction();
-                _context.SaveDataInTransaction(StoredProcedures.Partner_Insert, partner);
                 var partners = _context.LoadDataInTransaction<PartnerModel, dynamic>(StoredProcedures.Partner_GetAll, new { });
+                var policies = _context.LoadDataInTransaction<PolicyModel, dynamic>(StoredProcedures.Policy_GetAll, new { });
                 _context.CommitTransaction();
-                return partners;
+                List<PartnerLoadDto> partnerLoadDtos = new List<PartnerLoadDto>();
+                foreach (var partner in partners)
+                {
+                    var partnerPolicies = policies.Where(p => p.PartnerId == partner.Id).ToList();
+                    int numberOfPolicies = partnerPolicies.Count;
+                    decimal policiesTotalAmount = partnerPolicies.Sum(p => p.PolicyAmount);
+
+                    PartnerLoadDto partnerLoadDto = new PartnerLoadDto
+                    {
+                        Id = partner.Id,
+                        FirstName = partner.FirstName,
+                        LastName = partner.LastName,
+                        Address = partner.Address,
+                        PartnerNumber = partner.PartnerNumber,
+                        CroatianPIN = partner.CroatianPIN,
+                        PartnerTypeId = partner.PartnerTypeId,
+                        CreatedAtUtc = partner.CreatedAtUtc,
+                        CreateByUser = partner.CreateByUser,
+                        IsForeign = partner.IsForeign,
+                        ExternalCode = partner.ExternalCode,
+                        Gender = partner.Gender,
+                        NumberOfPolicies = numberOfPolicies,
+                        PoliciesTotalAmount = policiesTotalAmount
+                    };
+                    partnerLoadDtos.Add(partnerLoadDto);
+                }
+                return partnerLoadDtos;
             }
             catch
             {
@@ -65,6 +89,6 @@ namespace Partners.DataAccess.Data
             {
                 _context.Dispose();
             }
-        }
+        } 
     }
 }

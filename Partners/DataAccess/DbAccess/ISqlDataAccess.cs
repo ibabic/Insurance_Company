@@ -12,6 +12,6 @@ namespace Partners.DataAccess.DbAccess
         IEnumerable<T> LoadDataInTransaction<T, U>(string storedProcedure, U parameters);
         void CommitTransaction();
         void RollbackTransaction();
-        void Dispose();
+        void Dispose(); 
     }
 }

@@ -12,6 +12,6 @@ namespace Partners.DataAccess.Data
         Task<IEnumerable<PartnerModel>> GetAll();
         Task Insert(PartnerSaveDto partner);
         Task Update(PartnerUpdateDto partner);
-        IEnumerable<PartnerModel> TransactionInsertOneAndGetAll(PartnerSaveDto partner);
+        IEnumerable<PartnerLoadDto> GetPartnersWithPolicies();
     }
 }

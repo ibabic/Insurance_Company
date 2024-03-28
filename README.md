@@ -2,7 +2,7 @@
 
 ## Description
 
-This application is a simple implementation of a job application system based on Dapper ORM and SQL procedures. It has been developed in accordance with the specified task for managing job applications, which includes storing data in the database and providing a user interface through MVC (Model-View-Controller) architecture.
+This application is a simple implementation of a insurance company system based on Dapper ORM and SQL procedures. It has been developed in accordance with the specified task for managing job applications, which includes storing data in the database and providing a user interface through MVC (Model-View-Controller) architecture.
 
 ## Project Structure
 
